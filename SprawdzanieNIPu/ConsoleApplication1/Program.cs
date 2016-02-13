@@ -1,17 +1,34 @@
-﻿using System;
-
+﻿//-----------------------------------------------------------------------
+// <copyright file="Program.cs" company="CompanyName">
+// Company copyright tag.
+// </copyright>
+//----------------------------------------------------------------------- 
 namespace ConsoleApplication1
 {
-    class Program
+    using System;
+
+    /// <summary>
+    /// Domyślna klasa programu konsolowego tworzona przez Monodevelop
+    /// </summary>
+    internal class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Domyślna metoda Main
+        /// </summary>
+        private static void Main()
         {
-            NIP mk = new NIP("5342348938");
-            string jaka = mk.czyPoprawna ? "jest prawidłowy": "jest niepoprawny";
+            NIP[] numeryDoTestow = new NIP[5] 
+            { 
+                new NIP("7265163641"), new NIP("To będzie błąd"), new NIP("7265163642"),
+                new NIP("11112223333"), new NIP("2551050638") 
+            };
 
-            Console.Write(string.Format("Numer NIP: {0} {1}", mk.podziel, jaka));
-
-            var name = Console.ReadLine();
+            for (int i = 0; i <= numeryDoTestow.Length - 1; i++) 
+            {
+                Console.WriteLine(string.Format("Numer NIP: '{0}' {1}", numeryDoTestow[i].Podziel, numeryDoTestow[i].CzyPoprTekst));
+            }
+           
+            Console.ReadLine();
         }
     }
 }
