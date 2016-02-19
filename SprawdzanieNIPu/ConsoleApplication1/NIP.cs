@@ -1,10 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="NIP.cs" company="CompanyName">
-// Company copyright tag.
-// </copyright>
-//----------------------------------------------------------------------- 
-
-namespace ConsoleApplication1
+﻿namespace ConsoleApplication1
  {
     using System;
 
@@ -13,99 +7,65 @@ namespace ConsoleApplication1
     /// </summary>
  internal class NIP
  {
-
-   public Int64 numer;
-
-   public string Sformatuj;
-
+   private long numer;
    private int[] wagi = new int[] { 6, 5, 7, 2, 3, 4, 5, 6, 7 };
+   private int kontrolna;
 
-   private int Kontrolna;
+   private bool czyPoprawny;
+   private string sformatowana;
 
-   private bool CzyPoprawny;
-
-   static int NtaCyfra(Int64 number, int digit)
+   public bool CzyPoprawny
    {
-            return (int)((number / (int)Math.Pow(10, digit-1)) % 10);
-   }
+     get 
+     {
+        return this.czyPoprawny;
+     }
+    }
 
-    /// <summary>
-    /// Initializes a new instance of the NIP class.
-    /// </summary>
-    /// <param name="nr">Wprowadzony ciąg znaków</param>
+    public string Sformatowana
+    {
+      get 
+       {
+         return this.sformatowana;
+        }
+     }
+            
    public NIP(string nr)
    {
-      Int64 result;
-      if (TryParse(nr, out result))
+      nr = nr.Trim();
+            long x;
+            if (nr.Length == 10 && long.TryParse(nr.Trim(), out x))
             {
-                this.numer = result;
-                this.Sformatuj = string.Format("{0:000-000-00-00}", this.numer);
-                this.Kontrolna = ObliczKontrolna(this.numer);
-                this.CzyPoprawny = this.DlugoscOK &&
-                    (this.Kontrolna == (int)NtaCyfra(this.numer, 1));
+                this.numer = x;
+                this.sformatowana = string.Format("{0:000-000-00-00}", this.numer);
+                this.kontrolna = this.ObliczKontrolna(this.numer);
+                this.czyPoprawny = this.kontrolna == (int)NtaCyfra(this.numer, 9);
             }
       else
       {
-         this.Sformatuj = nr;
+         this.sformatowana = nr;
+         this.czyPoprawny = false;
       }
    }
 
-   public static bool TryParse(string nr, out Int64 result)
+   public static int NtaCyfra(long number, int digit)
    {
-            Int64 x;
-            if (Int64.TryParse (nr.Trim (), out x)) 
-            {
-                result = x;
-                return true;
-            } 
-            else 
-            {
-                result = 0;
-                return false;
-            }
+            return int.Parse(number.ToString().Substring(digit, 1));
    }
-   
-    /// <summary>
-    /// Gets a value indicating whether długość jest poprawna
-    /// </summary>
-   private bool DlugoscOK
+            
+   private int ObliczKontrolna(long numer)
    {
-    get
-    {
-        return this.numer.ToString().Length == 10;
-    }
-   }
-   
-    /// <summary>
-    /// Gets - sumę kontrolną
-    /// </summary>
-
-   private int ObliczKontrolna (Int64 numer)
-   {
-
      int x = 0;
      int liczba = 0;
 
-     for (int i = 0; i < wagi.Length; i++) 
+     for (int i = 0; i < this.wagi.Length; i++) 
      {
-                    x = NtaCyfra(numer,10-i);
-                    liczba = liczba + (x * wagi[i]);
+        x = NtaCyfra(numer, i);
+        liczba = liczba + (x * this.wagi[i]);
      }
 
      liczba = liczba % 11;
      return (int)liczba;
-
-    }
-
-    /// <summary>
-    /// Gets a STRING indicating whether numer NIP jest poprawny?
-    /// </summary>
-    public string CzyPoprawnyTekst
-    {
-        get
-        {
-                return this.CzyPoprawny ? "jest prawidłowy" : "jest niepoprawny";
-        }
     }
    }
   }
