@@ -2,9 +2,9 @@
  {
     using System;
 
-    /// <summary>
-    /// Klasa służy do sprawdzenia, czy wprowadzony ciąg znaków jest poprawnym numerem NIP i jego sformatowania.
-    /// </summary>
+ /// <summary>
+ /// Klasa służy do sprawdzenia, czy wprowadzony ciąg znaków jest poprawnym numerem NIP i jego sformatowania.
+ /// </summary>
  internal class NIP
  {
    private long numer;
@@ -55,17 +55,14 @@
             
    private int ObliczKontrolna(long numer)
    {
-     int x = 0;
      int liczba = 0;
 
      for (int i = 0; i < this.wagi.Length; i++) 
      {
-        x = NtaCyfra(numer, i);
-        liczba = liczba + (x * this.wagi[i]);
+        liczba += NtaCyfra(numer, i) * this.wagi[i];
      }
-
-     liczba = liczba % 11;
-     return (int)liczba;
+               
+     return (int)liczba % 11;
     }
    }
   }
