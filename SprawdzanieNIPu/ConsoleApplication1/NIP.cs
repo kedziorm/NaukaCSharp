@@ -9,14 +9,25 @@ namespace ConsoleApplication1
     using System;
 
     /// <summary>
-    /// Klasa służy do sprawdzenia, czy wprowadzony ciąg znaków jest poprawnym numerem NIP.
+    /// Klasa służy do sprawdzenia, czy wprowadzony ciąg znaków jest poprawnym numerem NIP i jego sformatowania.
     /// </summary>
  internal class NIP
  {
-    /// <summary>
-    /// Wprowadzony numer po usunięciu białych znaków
-    /// </summary>
-   private string numer;
+
+   public Int64 numer;
+
+   public string Sformatuj;
+
+   private int[] wagi = new int[] { 6, 5, 7, 2, 3, 4, 5, 6, 7 };
+
+   private int Kontrolna;
+
+   private bool CzyPoprawny;
+
+   static int NtaCyfra(Int64 number, int digit)
+   {
+            return (int)((number / (int)Math.Pow(10, digit-1)) % 10);
+   }
 
     /// <summary>
     /// Initializes a new instance of the NIP class.
@@ -24,88 +35,77 @@ namespace ConsoleApplication1
     /// <param name="nr">Wprowadzony ciąg znaków</param>
    public NIP(string nr)
    {
-    this.numer = nr.Trim();
+      Int64 result;
+      if (TryParse(nr, out result))
+            {
+                this.numer = result;
+                this.Sformatuj = string.Format("{0:000-000-00-00}", this.numer);
+                this.Kontrolna = ObliczKontrolna(this.numer);
+                this.CzyPoprawny = this.DlugoscOK &&
+                    (this.Kontrolna == (int)NtaCyfra(this.numer, 1));
+            }
+      else
+      {
+         this.Sformatuj = nr;
+      }
+   }
+
+   public static bool TryParse(string nr, out Int64 result)
+   {
+            Int64 x;
+            if (Int64.TryParse (nr.Trim (), out x)) 
+            {
+                result = x;
+                return true;
+            } 
+            else 
+            {
+                result = 0;
+                return false;
+            }
    }
    
     /// <summary>
     /// Gets a value indicating whether długość jest poprawna
     /// </summary>
-   public bool DlugoscOK
+   private bool DlugoscOK
    {
     get
     {
-     return this.numer.Length == 10;
+        return this.numer.ToString().Length == 10;
     }
    }
    
     /// <summary>
     /// Gets - sumę kontrolną
     /// </summary>
-   public int Kontrolna
+
+   private int ObliczKontrolna (Int64 numer)
    {
-    get
-    {
-     int[] wagi = new int[] { 6, 5, 7, 2, 3, 4, 5, 6, 7 };
-     double x = 0;
-     double liczba = 0;
+
+     int x = 0;
+     int liczba = 0;
 
      for (int i = 0; i < wagi.Length; i++) 
      {
-      x = Convert.ToDouble(this.numer.Substring(i, 1));
+                    x = NtaCyfra(numer,10-i);
                     liczba = liczba + (x * wagi[i]);
      }
 
      liczba = liczba % 11;
-
      return (int)liczba;
-    }
-   }
 
-    /// <summary>
-    /// Gets a value indicating whether numer NIP jest poprawny?
-    /// Idotyczne jest ścisłe stosowanie się do zasad StyleCopa, skoro piszę komentarzae po polsku
-    /// </summary>
-   public bool CzyPoprawna
-   {
-    get
-    {
-       return this.DlugoscOK && 
-        (this.Kontrolna == Convert.ToDouble(this.numer.Substring(9, 1)));
     }
-   }
 
     /// <summary>
     /// Gets a STRING indicating whether numer NIP jest poprawny?
     /// </summary>
-    public string CzyPoprTekst
+    public string CzyPoprawnyTekst
     {
         get
         {
-                return this.CzyPoprawna ? "jest prawidłowy" : "jest niepoprawny";
+                return this.CzyPoprawny ? "jest prawidłowy" : "jest niepoprawny";
         }
-    }
-
-   /// <summary>
-   /// Gets - zwraca ładnie sformatowany numer NIP.
-   /// </summary>
-   public string Podziel
-   {
-    get
-    {
-     if (this.DlugoscOK)
-     {
-      return string.Format(
-       "{0}-{1}-{2}-{3}",
-       this.numer.Substring(0, 3),
-       this.numer.Substring(3, 3),
-       this.numer.Substring(6, 2),
-       this.numer.Substring(8, 2));
-     }
-     else
-     {
-      return this.numer;
-     }
     }
    }
   }
- }
